@@ -1,0 +1,13 @@
+import test from 'node:test';import assert from 'node:assert/strict';
+import {scenario,run,makeEvents,minimize,batch,families} from '../lib/simulator.mjs';
+import {evaluateAgent} from '../lib/agent-sdk.mjs';import {decide as careful} from '../examples/guarded-agent.mjs';
+test('same seed produces identical events and ledger',()=>{const a=scenario(42,'late_capture');assert.deepEqual(run(a),run(scenario(42,'late_capture')));});
+test('safeguards preserve invariants across 6000 seeded cases',()=>{const scenarios=batch(77731,6000);for(const s of scenarios)assert.equal(run(s,true).passed,true,JSON.stringify(s));assert.ok(scenarios.filter(s=>!run(s,false).passed).length>1000);});
+test('valid recoveries are not suppressed by safeguards',()=>{for(let i=1;i<101;i++){const s=scenario(i,'clean_control');const r=run(s,true);assert.equal(r.ledger.captured.A,s.amount);assert.equal(r.recovered,s.amount);}});
+test('late bank success cannot create a second guarded charge',()=>{const s={...scenario(42,'late_capture'),delay:12,retryAt:5};assert.ok(run(s,false).violations.some(v=>v.code==='double_charge'));assert.equal(run(s,true).ledger.captured.A,s.amount);});
+test('replayed refunds never exceed captured funds with guards',()=>{const s={...scenario(77,'refund_replay'),copies:4};assert.equal(run(s,false).ledger.refunded.A,4*s.amount);assert.equal(run(s,true).ledger.refunded.A,s.amount);});
+test('stale budget snapshots cannot authorize both guarded actions',()=>{const s=scenario(42,'budget_race');assert.ok(run(s,false).violations.some(v=>v.code==='budget'));assert.ok(run(s,true).ledger.spent<=s.budget);});
+test('counterexample retains target failure and is deletion-minimal',()=>{for(const family of families){for(let i=1;i<=30;i++){const s=scenario(i,family),r=run(s);if(!r.violations.length)continue;const code=r.violations[0].code,m=minimize(s,code);assert.ok(run(s,false,m.events).violations.some(v=>v.code===code));for(let j=0;j<m.events.length;j++)assert.ok(!run(s,false,m.events.filter((_,k)=>k!==j)).violations.some(v=>v.code===code));}}});
+test('async agent can query simulated state and complete a clean recovery',async()=>{const s=scenario(17,'clean_control'),r=await evaluateAgent(s,careful);assert.equal(r.passed,true);assert.equal(r.recovered,s.amount);});
+test('hold-everything agent fails the progress check',async()=>{const r=await evaluateAgent(scenario(17,'clean_control'),async()=> 'hold');assert.ok(r.violations.some(v=>v.code==='progress'));});
+test('agent adapter rejects invalid decisions',async()=>{await assert.rejects(evaluateAgent(scenario(17,'clean_control'),async()=> 'refund_all'));});

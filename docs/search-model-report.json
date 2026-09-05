@@ -1,0 +1,24 @@
+{
+  "model": "Random forest, 32 trees, maximum depth 6",
+  "version": "failure-search-1",
+  "trainingRecords": 8000,
+  "heldOutRecords": 2000,
+  "rocAuc": 1.0,
+  "precision": 0.9981,
+  "recall": 1.0,
+  "brier": 0.0319,
+  "searchBudget": 200,
+  "rankedFailures": 200,
+  "randomFailuresMean": 106.1,
+  "randomFailuresP025": 93.0,
+  "randomFailuresP975": 120.0,
+  "provenance": "Labels come from running the reference policy through the deterministic simulator, not LLM-generated labels.",
+  "limitations": [
+    "All data describes the included reference implementation and six modeled failure families; these are not production incident frequencies.",
+    "Held-out seeds test new timings, not unseen payment providers or unseen agent code.",
+    "Risk ranking can concentrate on familiar bugs. The UI mixes 80% ranking with 20% uniform exploration.",
+    "This is a scenario prioritizer, not a proof of safety or a financial-loss forecast.",
+    "Exposure sums invariant breaches across independent tests and may overlap within a test."
+  ],
+  "artifactSha256": "249ce4cbb759992e52eeb39fc512a44167277db02f06ccfe5f7bb8d760fe84bf"
+}
