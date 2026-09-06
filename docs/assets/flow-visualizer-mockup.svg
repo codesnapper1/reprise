@@ -1,0 +1,128 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 480" width="100%" height="100%">
+  <defs>
+    <linearGradient id="canvasBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#121820"/>
+      <stop offset="100%" stop-color="#1a2330"/>
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Frame / Window -->
+  <rect width="1000" height="480" rx="14" fill="#0d1117" stroke="#30363d" stroke-width="1.5"/>
+
+  <!-- Window Header / Tabs -->
+  <rect x="0" y="0" width="1000" height="50" rx="14" fill="#161b22"/>
+  <circle cx="25" cy="25" r="6" fill="#f85149"/>
+  <circle cx="45" cy="25" r="6" fill="#e3b341"/>
+  <circle cx="65" cy="25" r="6" fill="#3fb950"/>
+
+  <text x="100" y="30" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="13" font-weight="700" fill="#f0f6fc">Reprise Replay Room</text>
+  <rect x="250" y="14" width="80" height="22" rx="4" fill="#21262d"/>
+  <text x="260" y="29" font-family="ui-monospace, monospace" font-size="11" fill="#8b949e">case-42017</text>
+
+  <!-- Segmented Control -->
+  <rect x="720" y="12" width="250" height="26" rx="6" fill="#0d1117" stroke="#30363d" stroke-width="1"/>
+  <rect x="722" y="14" width="120" height="22" rx="4" fill="#21262d"/>
+  <text x="735" y="29" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" font-weight="600" fill="#f0f6fc">Reference Policy</text>
+  <text x="855" y="29" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" font-weight="600" fill="#3fb950">With Safeguards</text>
+
+  <!-- Main Canvas Area -->
+  <rect x="20" y="65" width="670" height="340" rx="10" fill="url(#canvasBg)" stroke="#30363d" stroke-width="1"/>
+  
+  <!-- Canvas Top bar -->
+  <text x="35" y="90" font-family="ui-monospace, monospace" font-size="10" fill="#8b949e">VIRTUAL TIME · NO REAL MONEY MOVES</text>
+  <rect x="545" y="78" width="130" height="20" rx="10" fill="#da3633" fill-opacity="0.2" stroke="#f85149" stroke-width="1"/>
+  <text x="555" y="92" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="10" font-weight="600" fill="#ff7b72">Invariant breached</text>
+
+  <!-- Lane Grid lines & Labels -->
+  <line x1="80" y1="140" x2="660" y2="140" stroke="#30363d" stroke-dasharray="3,6"/>
+  <line x1="80" y1="230" x2="660" y2="230" stroke="#30363d" stroke-dasharray="3,6"/>
+  <line x1="80" y1="320" x2="660" y2="320" stroke="#30363d" stroke-dasharray="3,6"/>
+
+  <text x="30" y="144" font-family="ui-monospace, monospace" font-size="11" font-weight="700" fill="#8b949e">EVENTS</text>
+  <text x="30" y="234" font-family="ui-monospace, monospace" font-size="11" font-weight="700" fill="#8b949e">AGENT</text>
+  <text x="30" y="324" font-family="ui-monospace, monospace" font-size="11" font-weight="700" fill="#8b949e">LEDGER</text>
+
+  <!-- Bézier Connection Path -->
+  <path d="M 120 140 C 180 140, 180 320, 250 320 C 310 320, 310 230, 380 230 C 450 230, 450 320, 520 320 C 580 320, 580 140, 620 140" 
+        fill="none" stroke="#ff7958" stroke-width="2.5" filter="url(#glow)"/>
+
+  <!-- Event Points -->
+  <!-- Point 1: checkout.failed (t=0) -->
+  <circle cx="120" cy="140" r="8" fill="#222b38" stroke="#ff7958" stroke-width="2"/>
+  <circle cx="120" cy="140" r="3" fill="#ff7958"/>
+  <text x="120" y="120" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="10" fill="#f0f6fc" text-anchor="middle">Checkout Fail</text>
+  <text x="120" y="165" font-family="ui-monospace, monospace" font-size="10" fill="#8b949e" text-anchor="middle">0s</text>
+
+  <!-- Point 2: gateway.captured (t=3) -->
+  <circle cx="250" cy="320" r="8" fill="#222b38" stroke="#ff7958" stroke-width="2"/>
+  <circle cx="250" cy="320" r="3" fill="#ff7958"/>
+  <text x="250" y="300" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="10" fill="#f0f6fc" text-anchor="middle">Bank Capture</text>
+  <text x="250" y="345" font-family="ui-monospace, monospace" font-size="10" fill="#8b949e" text-anchor="middle">3s</text>
+
+  <!-- Point 3: recovery.request (t=5) -->
+  <circle cx="380" cy="230" r="16" fill="none" stroke="#ff7958" stroke-width="1" stroke-opacity="0.5"/>
+  <circle cx="380" cy="230" r="10" fill="#222b38" stroke="#ff7958" stroke-width="2.5"/>
+  <circle cx="380" cy="230" r="4" fill="#ff7958"/>
+  <text x="380" y="205" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="10" font-weight="700" fill="#ff7b72" text-anchor="middle">Recovery Charged!</text>
+  <text x="380" y="255" font-family="ui-monospace, monospace" font-size="10" fill="#8b949e" text-anchor="middle">5s</text>
+
+  <!-- Point 4: duplicate ledger charge (t=5.1) -->
+  <circle cx="520" cy="320" r="8" fill="#222b38" stroke="#ff7958" stroke-width="2"/>
+  <circle cx="520" cy="320" r="3" fill="#ff7958"/>
+  <text x="520" y="300" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="10" fill="#ff7b72" text-anchor="middle">₹10,000 [BREACH]</text>
+  <text x="520" y="345" font-family="ui-monospace, monospace" font-size="10" fill="#8b949e" text-anchor="middle">5s</text>
+
+  <!-- Point 5: webhook arrives (t=8) -->
+  <circle cx="620" cy="140" r="6" fill="#171e2a" stroke="#404653" stroke-width="1.5"/>
+  <text x="620" y="120" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="10" fill="#8b949e" text-anchor="middle">Webhook Recv</text>
+  <text x="620" y="165" font-family="ui-monospace, monospace" font-size="10" fill="#8b949e" text-anchor="middle">8s</text>
+
+  <!-- Scrubber Controls -->
+  <rect x="20" y="415" width="670" height="50" rx="8" fill="#161b22" stroke="#30363d" stroke-width="1"/>
+  <!-- Play button -->
+  <rect x="35" y="427" width="26" height="26" rx="13" fill="#21262d" stroke="#30363d" stroke-width="1"/>
+  <polygon points="44,435 54,440 44,445" fill="#f0f6fc"/>
+  <!-- Slider track -->
+  <rect x="75" y="437" width="510" height="6" rx="3" fill="#30363d"/>
+  <rect x="75" y="437" width="310" height="6" rx="3" fill="#ff7958"/>
+  <circle cx="385" cy="440" r="8" fill="#f0f6fc" stroke="#ff7958" stroke-width="2"/>
+  <text x="600" y="444" font-family="ui-monospace, monospace" font-size="11" fill="#8b949e">5.0s</text>
+  <text x="640" y="444" font-family="ui-monospace, monospace" font-size="11" fill="#f0f6fc">03/05</text>
+
+  <!-- Live Ledger Panel (Right Side) -->
+  <rect x="705" y="65" width="275" height="400" rx="10" fill="#161b22" stroke="#30363d" stroke-width="1"/>
+  <text x="725" y="95" font-family="ui-monospace, monospace" font-size="11" font-weight="600" fill="#8b949e">BANK LEDGER · 5.0s</text>
+  
+  <text x="725" y="145" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="32" font-weight="800" fill="#ff7b72">₹10,000</text>
+  <text x="725" y="168" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" fill="#8b949e">total captured in this test</text>
+
+  <line x1="725" y1="185" x2="955" y2="185" stroke="#30363d" stroke-width="1"/>
+
+  <g font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="12">
+    <text x="725" y="215" fill="#8b949e">Purchase value</text>
+    <text x="955" y="215" fill="#f0f6fc" font-weight="600" text-anchor="end">₹5,000</text>
+
+    <text x="725" y="245" fill="#8b949e">Recovery spend</text>
+    <text x="955" y="245" fill="#ff7b72" font-weight="600" text-anchor="end">₹5,000</text>
+
+    <text x="725" y="275" fill="#8b949e">Mandate budget</text>
+    <text x="955" y="275" fill="#f0f6fc" font-weight="600" text-anchor="end">₹6,000</text>
+
+    <text x="725" y="305" fill="#8b949e">Total refunded</text>
+    <text x="955" y="305" fill="#f0f6fc" font-weight="600" text-anchor="end">₹0</text>
+  </g>
+
+  <!-- Verdict Banner -->
+  <rect x="720" y="340" width="245" height="100" rx="8" fill="#381e1e" stroke="#f85149" stroke-width="1.5"/>
+  <text x="735" y="365" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="12" font-weight="700" fill="#ff7b72">One purchase, one charge</text>
+  <text x="735" y="388" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" fill="#c9d1d9">Rule violated: captured amount</text>
+  <text x="735" y="405" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" fill="#c9d1d9">exceeds original purchase value.</text>
+  <text x="735" y="425" font-family="ui-monospace, monospace" font-size="10" fill="#f85149">Exposure: ₹5,000</text>
+</svg>
