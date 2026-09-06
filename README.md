@@ -3,7 +3,6 @@
 <div align="center">
 
 [![Build & Tests](https://img.shields.io/badge/tests-10%2F10%20passing-3fb950?style=for-the-badge&logo=node.js&logoColor=white)](tests/simulator.test.mjs)
-[![Live Prototype](https://img.shields.io/badge/live%20demo-reprise--recovery.chatgpt.site-d4ff32?style=for-the-badge&logoColor=black&labelColor=232f1b)](https://reprise-recovery.rikit68533.chatgpt.site)
 [![Node.js Version](https://img.shields.io/badge/node-%3E%3D22.13.0-58a6ff?style=for-the-badge&logo=node.js&logoColor=white)](package.json)
 [![Edge Runtime](https://img.shields.io/badge/edge-Cloudflare%20Workers%20%2B%20D1-f38020?style=for-the-badge&logo=cloudflare&logoColor=white)](wrangler.jsonc)
 [![ML Search Model](https://img.shields.io/badge/ML%20search-32--tree%20random%20forest-bc8cff?style=for-the-badge&logo=scikitlearn&logoColor=white)](lib/model/search.json)
@@ -14,7 +13,6 @@
 
 **Stress-test autonomous payment recovery and refund agents against real-world distributed state divergence, race conditions, and webhook delays before real money moves.**
 
-[🌐 Live Prototype](https://reprise-recovery.rikit68533.chatgpt.site) •
 [📸 Visual Tour](#-working-prototype-screenshots--visual-tour) •
 [Key Implementations](#-system-implementations-deep-dive) •
 [Architecture](#-system-architecture) •
@@ -27,19 +25,61 @@
 
 ---
 
-## ⚡ Executive Summary
+## ⚡ The Problem Hook: The 3-Second Trap in Autonomous Payments
 
-Autonomous payment agents are evolving from customer support chat into mission-critical execution loops: evaluating failed checkouts, initiating automated payment retries, authorizing mandate recoveries, and issuing customer refunds.
+> **"You cannot prompt-engineer away a distributed network race condition."**
 
-**However, the fundamental vulnerability of payment agents is not prompt comprehension—it is distributed state divergence.**
+Autonomous payment agents are evolving from customer support bots into autonomous execution loops: evaluating abandoned carts, triggering automated payment retries, authorizing mandate debits, and issuing customer refunds.
 
-In high-throughput payment systems, real-world network latency creates an inescapable gap between the **Authoritative Gateway/Bank Ledger** and the **Merchant-Observed State**:
-- A browser drops a session, firing `checkout.failed` to the merchant.
-- Seconds later, the issuing bank completes late authorization, capturing funds.
-- An autonomous recovery agent, acting on the merchant's stale failure record, immediately triggers a retry charge.
-- **Result:** The customer is double-charged, mandate limits are breached, or refunded balances exceed collected revenue.
+When evaluated on standard LLM benchmarks or judged by other models, these agents appear flawless—scoring 99%+ on natural language understanding and prompt comprehension.
 
-**Reprise** is an open-source payment-agent wind tunnel. It executes deterministic discrete-event failure schedules, validates non-negotiable integer-money invariants, uses a compiled 32-tree Random Forest to prioritize failure-prone edge cases, reduces complex failing sequences into **1-minimal reproducible counterexamples**, and benchmarks unshielded reference workflows against guarded policies.
+**Yet in production, the exact same agents silently double-charge customers, breach mandate budgets, and bleed merchant capital.**
+
+### The Vulnerability: Distributed State Divergence
+
+Payment agents do not fail because they lack intelligence. **They fail because money moves on asynchronous distributed networks where the merchant's database is temporarily lying to them.**
+
+Between customer checkout drops, bank authorization latency, and webhook delivery lags, an inescapable temporal gap exists between the **Authoritative Gateway/Bank Ledger** and the **Merchant-Observed State**:
+
+```
+               THE 3-SECOND DISASTER: HOW AUTONOMOUS AGENTS FAIL
+───────────────────────────────────────────────────────────────────────────────────────────
+  t = 0.0s  │ Customer's mobile network drops during 3D-Secure authentication.
+            │ Merchant database records: [ checkout.failed ] (Merchant captured balance = ₹0)
+────────────┼──────────────────────────────────────────────────────────────────────────────
+  t = 3.0s  │ Bank gateway authorization unexpectedly completes in the background.
+            │ Authoritative Bank Ledger: [ gateway.captured ] (Actual captured balance = ₹3,718)
+            │ ⚠️ The gateway webhook notification is queued in transit and hasn't arrived yet.
+────────────┼──────────────────────────────────────────────────────────────────────────────
+  t = 5.0s  │ Autonomous Recovery Agent wakes up and inspects the merchant's internal view.
+            │ Merchant DB says: "Checkout failed, ₹0 collected."
+            │ Agent reasons logically: "Recovery consent active. Retrying charge immediately!"
+            │ Agent executes payment tool: [ recovery.request ]
+────────────┼──────────────────────────────────────────────────────────────────────────────
+  t = 5.1s  │ Bank processes the recovery request and captures another ₹3,718.
+            │ 💥 TOTAL CAPTURED: ₹7,436 for a single ₹3,718 purchase!
+            │ 🚨 DOUBLE CHARGE BREACH on the bank ledger.
+────────────┼──────────────────────────────────────────────────────────────────────────────
+  t = 8.0s  │ Delayed webhook arrives: "Original checkout succeeded at t=3.0s."
+            │ Too late. The customer has already been debited twice.
+───────────────────────────────────────────────────────────────────────────────────────────
+```
+
+### Why Existing Agent Evaluation Paradigms Fail
+1. **LLM-as-a-Judge cannot catch this:** The agent's reasoning was completely logical based on the data it was given. An LLM evaluator reviewing the agent's thoughts will award it a 100% score.
+2. **Traditional unit tests cannot catch this:** Mocking a successful or failed payment gateway API response tests individual code branches, but completely misses asynchronous temporal divergence.
+3. **Only strict mathematical ledger invariants under simulated distributed virtual time can prove safety.**
+
+---
+
+## 🛡️ The Solution: Reprise Wind Tunnel
+
+**Reprise** is an open-source payment-agent wind tunnel (built for the Razorpay AI Buildathon Open Track). Before an autonomous agent touches real money or connects to live payment gateway credentials:
+
+1. **Simulates Distributed Chaos:** Injects late bank authorizations, out-of-order webhooks, revoked customer consents, and concurrent mandate races across integer-paise virtual time.
+2. **Enforces Non-Negotiable Invariants:** Evaluates 5 mathematical ledger invariants (Double Charge, Active Consent, Mandate Budget, Refund Ceiling, Liveness) after every single event.
+3. **1-Minimal Counterexample Reduction:** Uses automated delta debugging to strip away noise and return the exact minimal sequence of events that broke the ledger.
+4. **Learned Scenario Prioritization:** Uses a 32-tree Random Forest compiled directly to edge JSON to find 200/200 failure edge cases in record time with zero external Python dependencies.
 
 > [!NOTE]
 > **Safety Notice:** Reprise is a deterministic discrete-event simulator and developer testbed. It does not initiate real bank transactions, does not require Razorpay production credentials, and is not a financial loss guarantee.
@@ -382,7 +422,7 @@ The Web UI features a custom responsive HTML5 Canvas that animates transactions 
 
 ## 📸 Working Prototype Screenshots & Visual Tour
 
-All screenshots below are captured directly from the **live deployed application** running at [**https://reprise-recovery.rikit68533.chatgpt.site**](https://reprise-recovery.rikit68533.chatgpt.site) (powered by React 19, Vinext, Cloudflare Workers, and Cloudflare D1 edge database):
+All screenshots below are captured directly from the **working prototype** (powered by React 19, Vinext, Cloudflare Workers, and Cloudflare D1 edge database):
 
 ---
 
